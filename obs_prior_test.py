@@ -95,6 +95,13 @@ plt.savefig('obs_prob_XY.png', dpi=250)
 
 plt.figure()
 plt.hist2d(X,Y, bins=50)
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.plot(
+    [Xminmin, Xminmax, Xmaxmin, Xmaxmax], 
+    [Yminmin, Yminmax, Ymaxmin, Ymaxmax], 
+    ls='None', marker='*', ms=20, color='red'
+)
 plt.savefig('obs_prob_jointXY.png', dpi=250)
 
 plt.figure()
