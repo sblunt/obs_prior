@@ -2,12 +2,20 @@ import numpy as np
 from orbitize.kepler import _calc_ecc_anom
 import matplotlib.pyplot as plt
 
-# obs prior test
+"""
+O'Neil+ 2019 observational prior test. Use rejection sampling to draw
+samples from the observational prior, then convert the samples to X and Y, and
+plot the distributions. If all goes well, the X and Y distributions should 
+be uniform.
 
-# for this test, the actual values of M, R0, and sigma_x/sigma_y shouldn't matter-- they 
-# just end up multiplying the prior prob by a constant value. 
+I am assuming a single epoch of data. For this test, the actual values of M, R0, 
+and sigma_x/sigma_y shouldn't matter; they just end up multiplying the prior 
+prob by a constant value. 
 
-# draw uniform samples of P and e, then rejection sample using eq 36a to get samples from the obs-based prior
+O'Neil+ 2019: https://arxiv.org/pdf/1809.05490.pdf
+"""
+
+# draw uniform samples of P and e
 num_samples = int(1e7)
 
 P = np.random.uniform(0, 1e10, num_samples)
@@ -16,6 +24,7 @@ e = np.random.uniform(0, 1, num_samples)
 P_min, P_max = np.min(P), np.max(P)
 e_min, e_max = np.min(e), np.max(e)
 
+# Eqs 33 and 36a
 def j_astro(P, e, manom=0.2):
 
     manom_arr = np.ones(len(e)) * manom
@@ -50,7 +59,7 @@ ax[1].set_xlabel('ecc')
 plt.tight_layout()
 plt.savefig('obs_prob.png', dpi=250)
 
-# convert obs-prior samples to X and Y
+# convert P and e to X and Y
 def X_and_Y(P, e, manom):
 
     sma = -(P**(1/3))
@@ -71,6 +80,8 @@ ax[0].hist(X, bins=50, alpha=0.5, color='grey')
 ax[1].hist(Y, bins=50, alpha=0.5, color='grey')
 ax[0].set_xlabel('X')
 ax[1].set_xlabel('Y')
+
+# propagate the boundaries of the initial P and e distributions to X and Y
 Xminmin, Yminmin = X_and_Y(P_min, e_min, manom)
 Xminmax, Yminmax = X_and_Y(P_min, e_max, manom)
 Xmaxmin, Ymaxmin = X_and_Y(P_max, e_min, manom)
